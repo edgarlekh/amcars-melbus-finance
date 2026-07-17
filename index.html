@@ -58,9 +58,12 @@
     },
     listen(key, callback) {
       return onSnapshot(STORE_DOC, (snap) => {
-        if (!snap.exists()) return;
+        if (!snap.exists()) {
+          callback(null);
+          return;
+        }
         const data = snap.data();
-        if (key in data) callback(data[key]);
+        callback(key in data ? data[key] : null);
       });
     },
   };
