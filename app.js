@@ -247,10 +247,11 @@ function Card({
   return /*#__PURE__*/React.createElement("div", {
     className: className,
     style: {
-      background: "#161D26",
+      background: "linear-gradient(165deg, #171F29 0%, #141B24 100%)",
       border: "1px solid #1F2A35",
-      borderRadius: 16,
+      borderRadius: "4px 18px 18px 18px",
       padding: 16,
+      position: "relative",
       ...style
     }
   }, children);
@@ -475,28 +476,30 @@ function App() {
 
         @media (prefers-reduced-motion: no-preference) {
           .lpl-flip {
-            animation: lpl-flip-in 320ms cubic-bezier(.2,.8,.2,1);
+            animation: lpl-flip-in 480ms cubic-bezier(.16,.9,.2,1);
+            transform-origin: 50% 50%;
           }
           @keyframes lpl-flip-in {
-            0%   { opacity: 0; transform: translateY(-6px) scaleY(0.85); filter: blur(2px); }
-            60%  { opacity: 1; transform: translateY(1px) scaleY(1.02); filter: blur(0); }
-            100% { opacity: 1; transform: translateY(0) scaleY(1); }
+            0%   { opacity: 0; transform: translateY(-14px) scaleY(0.4) rotateX(60deg); filter: blur(3px); }
+            45%  { opacity: 1; transform: translateY(2px) scaleY(1.08) rotateX(-8deg); filter: blur(0); }
+            70%  { transform: translateY(-1px) scaleY(0.98) rotateX(4deg); }
+            100% { opacity: 1; transform: translateY(0) scaleY(1) rotateX(0); }
           }
 
           .lpl-tab-enter {
-            animation: lpl-tab-in 260ms ease both;
+            animation: lpl-tab-in 420ms cubic-bezier(.16,.9,.2,1) both;
           }
           @keyframes lpl-tab-in {
-            0%   { opacity: 0; transform: translateY(10px); }
-            100% { opacity: 1; transform: translateY(0); }
+            0%   { opacity: 0; transform: translateY(18px) scale(0.985); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
           }
 
           .lpl-card-in {
-            animation: lpl-card-in 320ms ease both;
+            animation: lpl-card-in 460ms cubic-bezier(.16,.9,.2,1) both;
           }
           @keyframes lpl-card-in {
-            0%   { opacity: 0; transform: translateY(8px); }
-            100% { opacity: 1; transform: translateY(0); }
+            0%   { opacity: 0; transform: translateY(16px) scale(0.97); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
           }
         }
       `), /*#__PURE__*/React.createElement(Header, {
@@ -532,7 +535,18 @@ function App() {
 }
 const shellStyle = {
   minHeight: "100vh",
-  background: "radial-gradient(1200px 600px at 50% -10%, #141B24 0%, #0D1117 55%, #0A0D11 100%)",
+  background: `
+    repeating-linear-gradient(
+      180deg,
+      #ffffff05 0px,
+      #ffffff05 1px,
+      transparent 1px,
+      transparent 34px
+    ),
+    radial-gradient(1100px 550px at 15% -8%, #1B2C33 0%, transparent 55%),
+    radial-gradient(1100px 550px at 100% 0%, #2A2116 0%, transparent 50%),
+    radial-gradient(1200px 700px at 50% -10%, #141B24 0%, #0D1117 55%, #0A0D11 100%)
+  `,
   color: "#ECEFF3",
   fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
   display: "flex",
@@ -622,13 +636,22 @@ function BottomNav({
     style: {
       position: "sticky",
       bottom: 0,
-      display: "flex",
-      borderTop: "1px solid #1A2430",
-      background: "#0D1117f5",
-      backdropFilter: "blur(6px)",
+      padding: "0 10px calc(10px + env(safe-area-inset-bottom))",
       maxWidth: 480,
       width: "100%",
-      paddingBottom: "env(safe-area-inset-bottom)"
+      background: "linear-gradient(0deg, #0A0D11 40%, #0A0D1100 100%)",
+      pointerEvents: "none"
+    }
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      borderRadius: 20,
+      border: "1px solid #1F2A35",
+      background: "#12181Ff5",
+      backdropFilter: "blur(10px)",
+      boxShadow: "0 10px 30px #00000060",
+      padding: 5,
+      pointerEvents: "auto"
     }
   }, items.map(it => {
     const active = tab === it.id;
@@ -637,28 +660,30 @@ function BottomNav({
       onClick: () => setTab(it.id),
       style: {
         flex: 1,
-        background: "none",
+        background: active ? "#E8A33D18" : "none",
         border: "none",
-        padding: "7px 0 8px",
+        borderRadius: 15,
+        padding: "8px 0 7px",
         color: active ? "#E8A33D" : "#5C6773",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         gap: 2,
-        cursor: "pointer"
+        cursor: "pointer",
+        transition: "background .18s ease, color .18s ease"
       }
     }, /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 16,
+        fontSize: 15,
         lineHeight: 1
       }
     }, it.glyph), /*#__PURE__*/React.createElement("span", {
       style: {
-        fontSize: 10,
+        fontSize: 9.5,
         fontWeight: 600
       }
     }, it.label));
-  }));
+  })));
 }
 
 /* ================= LEDGER (Касса) ================= */
@@ -1449,6 +1474,7 @@ function SplitBlock({
   invoiceHint
 }) {
   const [showForm, setShowForm] = useState(false);
+  const [filterCompany, setFilterCompany] = useState("all");
   const splits = state[storeKey];
   function addSplit(split) {
     update(prev => ({
@@ -1472,7 +1498,24 @@ function SplitBlock({
       hint: "Добавьте хотя бы один вариант в Справочнике, прежде чем делать разбивку"
     });
   }
-  return /*#__PURE__*/React.createElement("div", null, splits.length === 0 ? /*#__PURE__*/React.createElement(Empty, {
+  const filteredSplits = splits.filter(s => filterCompany === "all" || s.company === filterCompany);
+  return /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8,
+      marginBottom: 12,
+      flexWrap: "wrap"
+    }
+  }, /*#__PURE__*/React.createElement(Pill, {
+    active: filterCompany === "all",
+    tone: "steel",
+    onClick: () => setFilterCompany("all")
+  }, "Все фирмы"), COMPANIES.map(c => /*#__PURE__*/React.createElement(Pill, {
+    key: c,
+    active: filterCompany === c,
+    color: COMPANY_COLORS[c],
+    onClick: () => setFilterCompany(c)
+  }, c))), filteredSplits.length === 0 ? /*#__PURE__*/React.createElement(Empty, {
     title: "Разбивок ещё нет",
     hint: "Распределите фактуру по позициям ниже"
   }) : /*#__PURE__*/React.createElement("div", {
@@ -1481,7 +1524,7 @@ function SplitBlock({
       flexDirection: "column",
       gap: 10
     }
-  }, splits.slice().sort((a, b) => a.date < b.date ? 1 : -1).map(s => /*#__PURE__*/React.createElement(SplitCard, {
+  }, filteredSplits.slice().sort((a, b) => a.date < b.date ? 1 : -1).map(s => /*#__PURE__*/React.createElement(SplitCard, {
     key: s.id,
     split: s,
     targets: targets,
@@ -1519,9 +1562,21 @@ function SplitCard({
   }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("div", {
     style: {
       fontWeight: 600,
-      fontSize: 14
+      fontSize: 14,
+      display: "flex",
+      alignItems: "center",
+      gap: 6
     }
-  }, split.label || "Фактура"), /*#__PURE__*/React.createElement("div", {
+  }, split.label || "Фактура", split.company && /*#__PURE__*/React.createElement("span", {
+    style: {
+      fontSize: 10,
+      fontWeight: 700,
+      color: COMPANY_COLORS[split.company] || "#E8A33D",
+      border: `1px solid ${COMPANY_COLORS[split.company] || "#E8A33D"}55`,
+      borderRadius: 6,
+      padding: "1px 5px"
+    }
+  }, split.company)), /*#__PURE__*/React.createElement("div", {
     style: {
       fontSize: 12,
       color: "#8A94A2",
@@ -1582,6 +1637,7 @@ function SplitForm({
   const [label, setLabel] = useState("");
   const [total, setTotal] = useState("");
   const [date, setDate] = useState(todayISO());
+  const [company, setCompany] = useState(COMPANIES[0]);
   const [rows, setRows] = useState(targets.map(t => ({
     targetId: t.id,
     amount: ""
@@ -1605,6 +1661,7 @@ function SplitForm({
       label,
       total: Number(total),
       date,
+      company,
       allocations
     });
   }
@@ -1612,6 +1669,24 @@ function SplitForm({
     title: `Разбивка · ${targetLabel}`,
     onClose: onCancel
   }, /*#__PURE__*/React.createElement(Field, {
+    label: "Со счёта какой фирмы фактура"
+  }, /*#__PURE__*/React.createElement("div", {
+    style: {
+      display: "flex",
+      gap: 8
+    }
+  }, COMPANIES.map(c => /*#__PURE__*/React.createElement(Pill, {
+    key: c,
+    active: company === c,
+    color: COMPANY_COLORS[c],
+    onClick: () => setCompany(c)
+  }, c))), /*#__PURE__*/React.createElement("div", {
+    style: {
+      fontSize: 11.5,
+      color: "#5C6773",
+      marginTop: 6
+    }
+  }, "Это про то, чей счёт оплатил фактуру — а не про то, на какую фирму/партнёра работает ", targetLabel.toLowerCase(), ". Ниже можно распределить сумму на любую позицию, независимо от этого.")), /*#__PURE__*/React.createElement(Field, {
     label: "Название фактуры"
   }, /*#__PURE__*/React.createElement("input", {
     value: label,
@@ -1836,8 +1911,10 @@ function Dashboard({
       paddingBottom: 10
     }
   }, /*#__PURE__*/React.createElement(Card, {
+    className: "lpl-card-in",
     style: {
-      marginBottom: 10
+      marginBottom: 10,
+      animationDelay: "0ms"
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: smallLabel
@@ -1851,12 +1928,14 @@ function Dashboard({
       gap: 10,
       marginBottom: 12
     }
-  }, COMPANIES.map(c => /*#__PURE__*/React.createElement(Card, {
+  }, COMPANIES.map((c, i) => /*#__PURE__*/React.createElement(Card, {
     key: c,
+    className: "lpl-card-in",
     style: {
       flex: 1,
       minWidth: 0,
-      borderTop: `2px solid ${COMPANY_COLORS[c]}`
+      borderTop: `2px solid ${COMPANY_COLORS[c]}`,
+      animationDelay: `${60 + i * 60}ms`
     }
   }, /*#__PURE__*/React.createElement("div", {
     style: {
@@ -2933,20 +3012,21 @@ function Sheet({
   }, "✕")), children));
 }
 const fabStyle = {
-  position: "sticky",
-  bottom: 14,
-  marginLeft: "calc(100% - 54px)",
-  width: 50,
-  height: 50,
-  borderRadius: "50%",
-  background: "#E8A33D",
+  position: "fixed",
+  bottom: "calc(70px + env(safe-area-inset-bottom))",
+  right: "max(16px, calc((100vw - 480px) / 2 + 16px))",
+  width: 54,
+  height: 54,
+  borderRadius: 16,
+  background: "linear-gradient(135deg, #F3C066, #E8A33D)",
   color: "#0D1117",
-  fontSize: 26,
+  fontSize: 28,
   fontWeight: 700,
   border: "none",
-  boxShadow: "0 6px 18px #00000060",
+  boxShadow: "0 8px 22px #00000070",
   cursor: "pointer",
-  lineHeight: "50px"
+  lineHeight: "54px",
+  zIndex: 20
 };
 const primaryBtnStyle = {
   width: "100%",
