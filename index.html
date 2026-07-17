@@ -9,11 +9,9 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="theme-color" content="#14181C" />
-
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
 <link rel="preconnect" href="https://www.gstatic.com" crossorigin />
-<link rel="preload" as="script" href="app.js?v=2" />
-
+<link rel="preload" as="script" href="app-v3.js" />
 <style>
   html,body{margin:0;padding:0;background:#14181C;}
   *{box-sizing:border-box;}
@@ -24,13 +22,10 @@
 </head>
 <body>
 <div id="root"></div>
-
 <script crossorigin src="https://cdn.jsdelivr.net/combine/npm/react@18/umd/react.production.min.js,npm/react-dom@18/umd/react-dom.production.min.js"></script>
-
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
   import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
-
   const firebaseConfig = {
     apiKey: "AIzaSyD0lMQBylXYBCqTaW5QlsWfie5BGY4m98w",
     authDomain: "amcars-melbus.firebaseapp.com",
@@ -39,11 +34,9 @@
     messagingSenderId: "617868178121",
     appId: "1:617868178121:web:fe24cfecbb72dc2975d318"
   };
-
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
   const STORE_DOC = doc(db, "amcmelbus", "store");
-
   window.storage = {
     async get(key) {
       const snap = await getDoc(STORE_DOC);
@@ -67,10 +60,8 @@
       });
     },
   };
-
   window.dispatchEvent(new Event("firebase-ready"));
 </script>
-
-<script src="app.js?v=2"></script>
+<script src="app-v3.js"></script>
 </body>
 </html>
