@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+<title>AMCARS · MELBUS</title>
+<link rel="manifest" href="manifest.json" />
+<link rel="apple-touch-icon" href="apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="theme-color" content="#14131A" />
+
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin />
+<link rel="preload" as="script" href="app-v11.js" />
+
+<style>
+  html,body{margin:0;padding:0;background:#14131A;}
+  *{box-sizing:border-box;}
+  ::-webkit-scrollbar{width:0;height:0;}
+  button{font-family:inherit;}
+  input::placeholder{color:#5A6169;}
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script crossorigin src="https://cdn.jsdelivr.net/combine/npm/react@18/umd/react.production.min.js,npm/react-dom@18/umd/react-dom.production.min.js"></script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyD0lMQBylXYBCqTaW5QlsWfie5BGY4m98w",
+    authDomain: "amcars-melbus.firebaseapp.com",
+    projectId: "amcars-melbus",
+    storageBucket: "amcars-melbus.firebasestorage.app",
+    messagingSenderId: "617868178121",
+    appId: "1:617868178121:web:fe24cfecbb72dc2975d318"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const STORE_DOC = doc(db, "amcmelbus", "store");
+
+  window.storage = {
+    async get(key) {
+      const snap = await getDoc(STORE_DOC);
+      if (!snap.exists()) return null;
+      const data = snap.data();
+      if (!(key in data)) return null;
+      return { key, value: data[key], shared: true };
+    },
+    async set(key, value) {
+      await setDoc(STORE_DOC, { [key]: value }, { merge: true });
+      return { key, value, shared: true };
+    },
+    listen(key, callback) {
+      return onSnapshot(STORE_DOC, (snap) => {
+        if (!snap.exists()) {
+          callback(null);
+          return;
+        }
+        const data = snap.data();
+        callback(key in data ? data[key] : null);
+      });
+    },
+  };
+
+  window.dispatchEvent(new Event("firebase-ready"));
+</script>
+
+<script src="app-v11.js"></script>
+</body>
+</html>
