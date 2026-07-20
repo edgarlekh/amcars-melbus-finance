@@ -528,7 +528,7 @@ function App() {
           }
 
           .lpl-tab-enter {
-            animation: lpl-tab-in 320ms ease both;
+            animation: lpl-tab-in 320ms ease;
           }
           @keyframes lpl-tab-in {
             0%   { opacity: 0; }
@@ -3022,7 +3022,7 @@ function Sheet({
   children,
   footer
 }) {
-  return /*#__PURE__*/React.createElement("div", {
+  return /*#__PURE__*/ReactDOM.createPortal(/*#__PURE__*/React.createElement("div", {
     style: {
       position: "fixed",
       inset: 0,
@@ -3078,7 +3078,7 @@ function Sheet({
       borderTop: "1px solid #322E3A",
       background: "#1A1820"
     }
-  }, footer)));
+  }, footer))), document.body);
 }
 const fabStyle = {
   position: "fixed",
